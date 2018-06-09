@@ -1,14 +1,16 @@
 <?php 
-
 ob_start();
-include "includes/header.php"; ?>
+include "includes/header.php"; 
+?>
+
 	<!--about-end-->
 	<!--product-starts-->
 	<div class="product"> 
 		<div class="container">
 			<div class="product-top">
 				<div class="product-one">
-					<div class="col-md-3 product-left">
+					<?php userDisplayTopSelling($conn) ?>
+					<!-- <div class="col-md-3 product-left">
 						<div class="product-main simpleCart_shelfItem">
 							<a href="preview" class="mask"><img class="img-responsive zoom-img" src="images/p-1.png" alt="" /></a>
 							<div class="product-bottom">
@@ -61,7 +63,7 @@ include "includes/header.php"; ?>
 						</div>
 					</div>
 					<div class="clearfix"></div>
-				</div>
+				</div> -->
 				<div class="product-one">
 					<div class="col-md-3 product-left">
 						<div class="product-main simpleCart_shelfItem">

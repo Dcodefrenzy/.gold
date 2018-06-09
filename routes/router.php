@@ -59,6 +59,11 @@ switch ($uri[1]) {
   include APP_PATH."/views/admin/adminlogin.php";
   break;
 
+  case "skriil":
+  include APP_PATH."/views/users/skriil.php";
+  break;
+
+
   case "":
   include APP_PATH."/views/users/user_home.php";
   break;

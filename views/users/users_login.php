@@ -1,8 +1,7 @@
 	<?php 
 	ob_start();
+	$page_title="Login";
 	include "includes/header2.php"; 
-
-	  $user_id = $sid;
 
 $error =  []; 
 if(array_key_exists('login', $_POST)){
@@ -17,12 +16,11 @@ if(array_key_exists('login', $_POST)){
   if(empty($error)){
     $clean = array_map('trim', $_POST);
 
-    userLogin($conn, $clean);
+    userLogin($conn, $sid, $clean);
   }
+ }
 
-  //update_user($conn, $user_id, $clean); 
-  //header("Location:/home");  
-}
+
 
 	?>
 
@@ -48,11 +46,13 @@ if(array_key_exists('login', $_POST)){
 					<h3>Existing User</h3>
 					<div class="account-bottom">
 						<form method="POST">
+							<?php $display = displayErrors($error, 'email'); echo $display; ?>
 						<input placeholder="Email" type="text" tabindex="3" required name="email">
-						<input placeholder="Password" type="password" tabindex="4" required name="password">
+						<?php $display = displayErrors($error, 'hash'); echo $display; ?>
+						<input placeholder="password" type="password" tabindex="4" required name="hash">
 						<div class="address">
 							<a class="forgot" href="#">Forgot Your Password?</a>
-							<input type="submit" value="Login">
+							<input type="submit" value="Login" name="login">
 							</form>
 						</div>
 					</div>
@@ -60,7 +60,7 @@ if(array_key_exists('login', $_POST)){
 				<div class="col-md-6 account-right account-left">
 					<h3>New User? Create an Account</h3>
 					<p>By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.</p>
-					<a href="register.html">Create an Account</a>
+					<a href="register">Create an Account</a>
 				</div>
 				<div class="clearfix"></div>
 			</div>

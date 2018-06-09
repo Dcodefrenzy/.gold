@@ -1,7 +1,7 @@
 <?php 
 ob_start();
 include "includes/header2.php"; 
-	$hash_id = $sid;
+	
 	$error = [];
 
 if(array_key_exists('register', $_POST)){
