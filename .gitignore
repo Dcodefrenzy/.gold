@@ -1,0 +1,5 @@
+.vagrant
+Vagrantfile
+views.zip
+www/phpmyadmin
+derrand/model/db.php
