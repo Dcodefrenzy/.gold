@@ -1,9 +1,11 @@
 
 
 
+
+
+
 <iframe src="http://www.skrill.com/payment-form?email=<?php echo $email ?>&fname=<?php echo $FirstName ?>&lname=<?php echo $LastName ?>&address=<?php echo $Address ?>&address2=<?php echo $Address2 ?>&city=<?php echo $City ?>&postal_code=<?php echo $PostalCode ?>&country=<?php echo $CountryId ?>&state=<?php echo $State ?>" name="payment" height="600" width="610" border="0">
  </iframe>
-
 
 <form action="https://www.skrill.com/app/payment.pl" method="post" target="_self">
 <input type="hidden" name="pay_to_email" value="ayodejisamuelfakunle@skrill.com">

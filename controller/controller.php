@@ -1160,7 +1160,7 @@ function userDisplayTopSelling($dbconn){
     extract($row);
 echo   "<div class='col-md-3 product-left'>
             <div class='product-main simpleCart_shelfItem'>
-              <a href='preview' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt='' /></a>
+              <a href='preview' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
               <div class='product-bottom'>
                 <h3>".$product_name."</h3>
                 <p>Explore Now</p'
