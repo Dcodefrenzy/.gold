@@ -20,7 +20,7 @@
           echo  '<option value="">-Select Sub Category-</option>';
         while($row = $stmt->fetch(PDO::FETCH_BOTH)){
 
-          echo '<option value="'.$row['sub_category_id'].'">'.$row['sub_category_name'].'</option>';
+          echo '<option value="'.$row['hash_id'].'">'.$row['sub_category_name'].'</option>';
 
         }
 

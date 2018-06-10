@@ -15,6 +15,7 @@
 						<li><a href="admin_home">Home</a></li>
 						<li><a href="product_category">Category</a></li>
 						<li><a href="product_sub_category">Sub Category</a></li>
+						<li><a href="product_final_category">Final Category</a></li>
 						<li><a href="add_products">Add Products</a></li>
 						<li><a href="products">View Products</a></li>
 						<li><a href="logout">Logout</a></li>
@@ -23,6 +24,7 @@
 						<li><a href="admin_home">Home</a></li>
 						<li><a href="product_category">Category</a></li>
 						<li><a href="product_sub_category">Sub Category</a></li>
+						<li><a href="product_final_category">Final Category</a></li>
 						<li><a href="add_products">Add Products</a></li>
 						<li><a href="products">View Products</a></li>
 						<li><a href="admin_register">Register New Admin</a></li>

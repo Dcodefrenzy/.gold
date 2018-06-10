@@ -9,7 +9,7 @@ $link= "add_products";
 
 include 'include/header2.php';
 
-$flag = array("none", "top-selling", "popular-demand");
+$flag = array("none", "top-selling", "popular-demand","new-offers");
 $availability = array("1" =>"Available", "2" =>"Not Available");
 $promo = array("1" =>"On Promo", "2" =>"No Promo");
 $error = [];
@@ -34,6 +34,10 @@ if(array_key_exists('add', $_POST)){
 
   if(empty($_POST['sub_category'])){
     $error['sub_category'] = "Please enter Sub-Category";
+  }
+
+  if(empty($_POST['final_category'])){
+    $error['final_category'] = "Please enter final-Category";
   }
 
   if(empty($_POST['description'])){
@@ -62,6 +66,10 @@ if(array_key_exists('add', $_POST)){
 
   if(empty($_POST['flag'])){
     $error['flag'] = "please enter flag";
+  }
+  
+  if(empty($_POST['inventory'])){
+    $error['inventory'] = "please enter inventory";
   }
 
   if(empty($_FILES['pic']['name'])){
@@ -131,8 +139,18 @@ if(array_key_exists('add', $_POST)){
   <?php  $display = displayErrors($error, 'sub_category');
    echo $display; ?>
   <label for="">SUB CATEGORY</label>
-  <select id ="sub" class="" name="sub_category">
+  <select id ="sub" onchange="getSubCat(this.value)" class="" name="sub_category">
   <option value="">-Select Sub Category-</option>
+ 
+  </select>
+</div>
+
+<div class="">
+  <?php  $display = displayErrors($error, 'final_category');
+   echo $display; ?>
+  <label for="">SUB CATEGORY</label>
+  <select id ="final" class="" name="final_category">
+  <option value="">-Select Final Category-</option>
   </select>
 </div>
 
@@ -190,6 +208,13 @@ if(array_key_exists('add', $_POST)){
   </option>
 <?php  }?>
   </select>
+
+  <div class="">
+  <?php  $display = displayErrors($error, 'inventory');
+   echo $display; ?>
+<label for="">OLD PRICE</label>
+<input type="number" name="inventory" value="" placeholder="inventory">
+</div>
 </div>
 
 <input type="submit" name="add" value="Add Product">
@@ -220,6 +245,31 @@ function subAjax(url, method, params){
   }
   xhr.open(method, url, true);
   xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  xhr.send(params);
+}
+  //for getting final category
+function getSubCat(id){
+
+
+  var url = 'finalCategory';
+  console.log(url);
+  var method ='POST';
+  var params = 'hash_id=' + id;
+
+  getFinalCat(url, method, params);
+}
+
+function getFinalCat(url, method, params){
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = () =>{
+    if(xhr.readyState == 4){
+      var res = xhr.responseText;
+      console.log(res)
+      document.getElementById('final').innerHTML = res;
+    }
+  }
+  xhr.open(method, url, true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   xhr.send(params);
 }
 </script>

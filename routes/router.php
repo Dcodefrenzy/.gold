@@ -100,8 +100,26 @@ switch ($uri[1]) {
   include APP_PATH."/views/admin/subcategory.php";
   break;
 
+  case "product_final_category":
+  include APP_PATH."/views/admin/final_category.php";
+  break;
+
+  
+
+  case "final_category":
+  include APP_PATH."/views/admin/final_category.php";
+  break;
+
+  case "edit_Final_Category?id=$category_id":
+  include APP_PATH."/views/admin/editFinalCategory.php";
+  break;
+
   case "getSubCategory":
   include APP_PATH."/views/admin/ajax/subcategory.php";
+  break;
+
+  case "finalCategory":
+  include APP_PATH."/views/admin/ajax/finalCategory.php";
   break;
 
   case "edit_products":

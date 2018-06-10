@@ -64,7 +64,7 @@ include "includes/header.php";
 					</div>
 					<div class="clearfix"></div>
 				</div> -->
-				<div class="product-one">
+				<!-- <div class="product-one">
 					<div class="col-md-3 product-left">
 						<div class="product-main simpleCart_shelfItem">
 							<a href="preview" class="mask"><img class="img-responsive zoom-img" src="images/p-5.png" alt="" /></a>
@@ -118,7 +118,7 @@ include "includes/header.php";
 						</div>
 					</div>
 					<div class="clearfix"></div>
-				</div>					
+				</div>					 -->
 			</div>
 		</div>
 	</div>

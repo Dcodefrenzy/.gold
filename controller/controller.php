@@ -42,6 +42,7 @@ function displayCategories($dbconn){
     "<li id=\"$category_id\" onclick=\"getSubCategory('$category_id');\"><a href=\"#\"><i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>$category_name</a></li><ul>
     <li><a id=\"ba$category_id\"href=\"products.html\"><i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i></a></li>
     </ul>";
+  
   }
   return $result;
 }
@@ -158,6 +159,26 @@ function addSubCategory($dbconn, $post){
   header("Location: /product_sub_category?success=$succ");
 }
 
+function addFinalCategory($dbconn, $post){
+  $rnd = rand(0000000000,9999999999);
+  $hash_id = 'fin'.$rnd;
+
+
+  $stmt = $dbconn->prepare("INSERT INTO final_category(final_category_name,  hash_id, sub_category, cat_id, date_added) VALUES(:fn, :hid, :scat,:cat_id,NOW())");
+  $data = [
+        ':fn'=>$post['final_category'],
+        ':hid'=>$hash_id,
+        ':cat_id'=>$post['category'],
+        ':scat'=>$post['sub_category'],
+  ];
+  $stmt->execute($data);
+  $success = "Sub Category Succefully Added";
+  $succ = preg_replace('/\s+/', '_', $success);
+ //header("Location: /final_category?success=$succ");
+}
+
+
+
 function viewProducts($dbconn){
   $stmt = $dbconn->prepare("SELECT * FROM product");
   $stmt->execute();
@@ -196,6 +217,24 @@ function viewProducts($dbconn){
   }
 }
 
+function viewFinalCategories($dbconn){
+
+  $stmt = $dbconn->prepare("SELECT * FROM final_category");
+  $stmt->execute();
+  while($record = $stmt->fetch()){
+    extract($record);
+    echo "<tr>";
+    echo "<td>".$id."</td>";
+    echo "<td>".$final_category_name."</td>";
+    echo "<td>".$sub_category."</td>";
+    echo "<td>".$cat_id."</td>";
+    echo "<td>".$date_added."</td>";
+        $red = preg_replace('/\s+/', '_', $final_category_name);
+    echo "<td><a href=\"edit_Final_Category?id=".$hash_id."\">edit</a></td>";
+    echo "<td><a href=\"delete_Final_Category?id=".$hash_id."\">delete</a></td>";
+    echo "</tr>";
+  }
+}
 
 function viewSubCategories($dbconn){
 
@@ -260,11 +299,22 @@ function editSubCategory($dbconn, $post, $get){
 
   $stmt = $dbconn->prepare("UPDATE sub_category SET sub_category_name=:name WHERE hash_id= :id");
 
-  $stmt->bindParam(":name" , $post['category']);
+  $stmt->bindParam(":name" , $post['sub_category']);
   $stmt -> bindParam(":id", $get['id']);
   $stmt->execute();
 
   header("Location: /product_sub_category");
+}
+
+function editfinalCategory($dbconn, $post, $get){
+
+  $stmt = $dbconn->prepare("UPDATE final_category SET final_category_name=:name WHERE hash_id= :id");
+
+  $stmt->bindParam(":name" , $post['final_category']);
+  $stmt -> bindParam(":id", $get['id']);
+  $stmt->execute();
+
+  header("Location: final_category");
 }
 // function getIdByHashId($dbconn,$id_name,$id,$table,$hash_id){
 //   $stmt = $dbconn->prepare("SELECT $id_name FROM $table WHERE hash_id = :hid ");
@@ -296,6 +346,17 @@ function getSubCategoryById($dbconn,$get){
   $cal = $stmt->fetch(PDO::FETCH_BOTH);
   extract($cal);
   return $sub_category_name;
+}
+
+function getFinalCategoryById($dbconn,$get){
+  $stmt= $dbconn->prepare("SELECT * FROM final_category WHERE hash_id = :cat");
+
+  $stmt->bindParam(":cat", $get['id']);
+  $stmt->execute();
+
+  $cal = $stmt->fetch(PDO::FETCH_BOTH);
+  extract($cal);
+  return $final_category_name;
 }
 
 
@@ -409,7 +470,7 @@ function addProducts($dbconn,$post,$destination){
 
   $rnd = rand(000000000000,99999999999);
   $hash_id = 'product'.$rnd;
-  $stmt = $dbconn->prepare("INSERT INTO product VALUES(NULL,:pname,:maker,:descr,:cat,:subcat,:av,:prost,:pr,:opr, :hid, :dest,:flg)");
+  $stmt = $dbconn->prepare("INSERT INTO product VALUES(NULL,:pname,:maker,:descr,:cat,:subcat,:finalcat,:av,:prost,:pr,:opr, :hid, :dest,:flg,:inv)");
 
 
   $data = [
@@ -418,13 +479,15 @@ function addProducts($dbconn,$post,$destination){
     ':descr' => $post['description'],
     ':cat' => $post['category'],
     ':subcat' => $post['sub_category'],
+    ':finalcat' => $post['final_category'],
     ':av' => $post['availability'],
     ':prost' => $post['promo_status'],
     ':pr' => $post['price'],
     ':opr' => $post['old_price'],
     ':hid' => $hash_id,
     ':dest' => $destination,
-    ':flg' => $post['flag']
+    ':flg' => $post['flag'],
+    ':inv' => $post['inventory'],
   ];
 
   $stmt->execute($data);
@@ -904,14 +967,31 @@ function fetchPreviewProductroducts($dbconn, $hid){
 
 }
 
+
 function fetchSubCategory($dbconn,$cid){
   $stmt = $dbconn->prepare("SELECT * FROM sub_category WHERE category_id = $cid");
   $stmt->execute();
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
-    // $product = fetchProducts($dbconn, $sub_category_id);
-    echo '<li><a href="/product?hid='.$sub_category_id.'"><i class="fa fa-arrow-right" aria-hidden="true"></i>'.$sub_category_name.'</a></li>';
 
+           echo  "<div class='col1 me-one'>
+                    <h4>".$sub_category_name."</h4>";
+                         fetchFinalCategory($dbconn, $hash_id);
+            echo        "</div>";
+
+  }
+}
+
+function fetchFinalCategory($dbconn, $hid){
+      $stmt= $dbconn->prepare("SELECT * FROM final_category WHERE sub_category = :hid");
+      $stmt->bindParam(':hid', $hid);
+      $stmt->execute();
+      while ( $row = $stmt->fetch(PDO::FETCH_BOTH)) {
+        extract($row);
+      
+    echo  "<ul>
+          <li><a href='product?hid=".$hash_id."'>".$final_category_name."</a></li>
+           </ul>";
   }
 }
 
@@ -921,19 +1001,14 @@ function fetchMainCategory($dbconn){
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
 
-    echo  "<li class='dropdown'>";
-    echo "<a href='#' class='dropdown-toggle' data-toggle='dropdown'>".$category_name."<b class='caret'></b></a>
-    <ul class='dropdown-menu multi-column columns-3'>
-    <div class='row'>
-    <div class='multi-gd-img'>
-    <ul class='multi-column-dropdown'>
-    <h6>".$category_name."</h6>";
-    fetchSubCategory($dbconn, $category_id);
-    echo               "</ul>
-    </div>
-    </div>
-    </ul>
-    </li>";
+    echo  "<li class='grid'><a href='#'>".$category_name."</a>
+              <div class='mepanel'>
+                <div class='row'>";
+                    fetchSubCategory($dbconn, $category_id);
+           echo       "</div>
+                    </div>
+                  </li>";
+
   }
 
 }
@@ -1163,13 +1238,14 @@ echo   "<div class='col-md-3 product-left'>
               <a href='preview' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
               <div class='product-bottom'>
                 <h3>".$product_name."</h3>
-                <p>Explore Now</p'
-                <h4><a class='item_add' href='preview'><i></i></a> <span class=' item_price'>".$price."</span></h4>
+                <p>Explore Now</p>'
+                <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
               </div>
               <div class='srch'>
                 <span>-50%</span>
               </div>
             </div>
+            <div class='clearfix'></div>
           </div>";
 
   }
@@ -1184,32 +1260,21 @@ function userDisplayPopularDemand($dbconn){
   while ($row = $stmt->fetch(PDO::FETCH_BOTH)){
     $count = $stmt->rowCount();
     extract($row);
-    echo     "<div class='col-md-3 top_brand_left-1'>
-    <div class='hover14 column'>
-    <div class='agile_top_brand_left_grid'>
-    <div class='agile_top_brand_left_grid_pos'>
-    </div>
-    <div class='agile_top_brand_left_grid1'>
-    <figure>
-    <div class='snipcart-item block' >
-    <div class='snipcart-thumb'>
-    <a href='preview?hid=".$hash_id."'><img title=' ' alt=".$product_name." src=".$file_path." /></a>
-    <p>".$product_name."</p>
-    <h4>".$price." <span>".$old_price."</span></h4>
-    </div>
-    <div class='snipcart-details top_brand_home_details'>
-    <form action='#'' method='post'>
-    <fieldset>
-    <a href='preview?hid=".$hash_id."'><input type='submit' name='submit' value='Buy' class='button'></a>
-    </fieldset>
-    </form>
-    </div>
-    </div>
-    </figure>
-    </div>
-    </div>
-    </div>
-    </div>";
+    echo "<div class='product-one'>
+          <div class='col-md-3 product-left'>
+            <div class='product-main simpleCart_shelfItem'>
+              <a href='preview' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+              <div class='product-bottom'>
+                <h3>".$product_name."</h3>
+                <p>Explore Now</p>
+                <h4><a class='item_add' href='#'><i></i></a> <span class=' item_price'>$ 329</span></h4>
+              </div>
+              <div class='srch'>
+                <span>-50%</span>
+              </div>
+            </div>
+          </div>";
+
 
   }
 

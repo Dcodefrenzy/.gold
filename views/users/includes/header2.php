@@ -87,7 +87,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				<div class="col-md-9 header-left">
 				<div class="top-nav">
 					<ul class="memenu skyblue"><li class="active"><a href="home">Home</a></li>
-						<li class="grid"><a href="#">Men</a>
+						<?php fetchMainCategory($conn) ?>
+				<!-- 		<li class="grid"><a href="#">Men</a>
 							<div class="mepanel">
 								<div class="row">
 									<div class="col1 me-one">
@@ -215,7 +216,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 									</div>
 								</div>
 							</div>
-						</li>
+						</li> -->
 						<li class="grid"><a href="contact">Contact</a>
 						</li>
 					</ul>
