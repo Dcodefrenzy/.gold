@@ -975,7 +975,7 @@ function fetchSubCategory($dbconn,$cid){
     extract($row);
 
            echo  "<div class='col1 me-one'>
-                    <h4>".$sub_category_name."</h4>";
+                    <h4><a href='product?sub_cat=".$hash_id."'>".$sub_category_name."</a></h4>";
                          fetchFinalCategory($dbconn, $hash_id);
             echo        "</div>";
 
@@ -1001,7 +1001,7 @@ function fetchMainCategory($dbconn){
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
 
-    echo  "<li class='grid'><a href='#'>".$category_name."</a>
+    echo  "<li class='grid'><a href='product?cat_id=".$category_id."'>".$category_name."</a>
               <div class='mepanel'>
                 <div class='row'>";
                     fetchSubCategory($dbconn, $category_id);
@@ -1101,6 +1101,67 @@ function getTotalRecordForProductId($dbconn, $hid,  $record){
 
 }
 
+function getTotalRecordForCatId($dbconn, $hid, $record){
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE category = :hid ORDER BY product_id DESC");
+  $stmt->bindParam(':hid', $hid);
+  $stmt->execute();
+  $total_record=$stmt->rowCount();
+
+  $total_pages = ceil($total_record/$record);
+  return $total_pages;
+
+}
+function showProductsBySubCat($dbconn, $hid, $start, $record){
+    $result = " ";
+  $stmt = $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC LIMIT $start, $record");
+  $stmt->bindParam(':hid', $hid);
+  $stmt -> execute();
+  while($row = $stmt->fetch(PDO::FETCH_BOTH)){
+    extract($row);
+     $result .=  "<div class='col-md-4 product-left p-left'>
+                  <div class='product-main simpleCart_shelfItem'>
+                  <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+                  <div class='product-bottom'>
+                  <h3>".$product_name."</h3>
+                  <p><b>Stock- ".$inventory."</b></p>
+                  <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
+                </div>
+                <div class='srch srch1'>
+                  <span>-50%</span>
+                </div>
+              </div>
+            </div>";
+  }
+  return $result;
+
+
+}
+
+function showProductsByCatId($dbconn, $hid, $start, $record){
+  $result = " ";
+  $stmt = $dbconn->prepare("SELECT * FROM product WHERE category = :hid ORDER BY product_id DESC LIMIT $start, $record");
+  $stmt->bindParam(':hid', $hid);
+  $stmt -> execute();
+  while($row = $stmt->fetch(PDO::FETCH_BOTH)){
+    extract($row);
+     $result .=  "<div class='col-md-4 product-left p-left'>
+                  <div class='product-main simpleCart_shelfItem'>
+                  <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+                  <div class='product-bottom'>
+                  <h3>".$product_name."</h3>
+                  <p><b>Stock- ".$inventory."</b></p>
+                  <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
+                </div>
+                <div class='srch srch1'>
+                  <span>-50%</span>
+                </div>
+              </div>
+            </div>";
+  }
+  return $result;
+
+}
+
 function showProducts($dbconn, $hid, $start, $record){
   $result = " ";
   $stmt = $dbconn->prepare("SELECT * FROM product WHERE final_category = :hid ORDER BY product_id DESC LIMIT $start, $record");
@@ -1140,14 +1201,25 @@ function getPagination($dbconn, $hid, $record){
     $result  .=    "<li><a href=product?hid=".$hid."&&page=".$i.">".$i."</a></li>";
 
             "<li class='active'><a href=product?hid=$hid&&page=".$i.">".$i."<span class='sr-only'>(current)</span></a></li>";
-
   }
-
-
   return $result;
   // var_dump($result);
-
 }
+
+ function getPaginationByCatId($dbconn, $hid, $record){
+    $result = "";
+  $prev = "1";
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE category = :hid ORDER BY product_id DESC");
+  $stmt->bindParam(':hid', $hid);
+  $stmt->execute();
+  $total_record=$stmt->rowCount();
+  $total_pages = ceil($total_record/$record);
+  for ($i=1; $i <=$total_pages ; $i++) {
+    $result  .=    "<li><a href=product?hid=".$hid."&&page=".$i.">".$i."</a></li>";
+
+    }
+    return $result;
+ }
 
 function getProductsFromCart($dbconn, $userID){
   $result = " ";

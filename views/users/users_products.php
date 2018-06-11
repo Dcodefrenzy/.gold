@@ -10,13 +10,25 @@
 	}
 														
 	$start_from = ($page-1)*$record_per_page;
-
+	//Fetching products by Final category.
 	if(isset($_GET['hid'])){
 		$hash_id = $_GET['hid'];
 		$show = showProducts($conn, $hash_id, $start_from, $record_per_page);
 		$pargination = getPagination($conn, $hash_id, $record_per_page);
 	 	$total_record = getTotalRecordForProductId($conn, $hid,  $record_per_page);
-
+	 	//fetching products by main category
+	}elseif(isset($_GET['cat_id'])){
+		$cat_id = $_GET['cat_id'];
+		$show = showProductsByCatId($conn, $cat_id, $start_from, $record_per_page);
+		$pargination = getPaginationByCatId($conn, $cat_id, $record_per_page);
+		$total_record = getTotalRecordForCatId($conn, $cat_id,  $record_per_page);
+		//fetching products by sub category 
+	}elseif (isset($_GET['sub_cat'])) {
+		$sub_cat = $_GET['sub_cat'];
+		$show = showProductsBySubCat($conn, $sub_cat, $start_from, $record_per_page);
+		$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
+		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);
+		//fetching All Products.
 	}else{
  		$show = showAllProducts($conn, $start_from, $record_per_page);
  		$pargination = getPaginationForAllProduct($conn,  $record_per_page);
@@ -24,7 +36,7 @@
  		 $total_record = getTotalRecord($conn,  $record_per_page);
  	}
 
-
+ 			//Generating $preview and $next.
 		if($page > 1){
  			$prev = $page - 1;
  		}else{

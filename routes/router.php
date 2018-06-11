@@ -36,6 +36,10 @@ $cart_id = NULL;
 if(isset($_GET['cart_id'])){
   $cart_id = $_GET['cart_id'];
 }
+  $sub_cat = NULL;
+  if (isset($_GET['sub_cat'])) {
+    $sub_cat = 'sub_cat';
+  }
   $hid = NULL;
   if(isset($_GET['hid'])){
     $hid = $_GET['hid'];
@@ -44,9 +48,9 @@ if(isset($_GET['cart_id'])){
   if(isset($_GET['user_id'])){
     $user_id = $_GET['user_id'];
   }
-   $cart_id = NULL;
-  if(isset($_GET['cart_id'])){
-    $cart_id = $_GET['cart_id'];
+   $cat_id = NULL;
+  if(isset($_GET['cat_id'])){
+    $cat_id = $_GET['cat_id'];
   }
   $i = "";
   if(isset($_GET['page'])){
@@ -212,6 +216,15 @@ switch ($uri[1]) {
   break;
 
   case "product":
+  include APP_PATH."/views/users/users_products.php";
+  break;
+
+    
+  case "product?sub_cat=$sub_cat":
+  include APP_PATH."/views/users/users_products.php";
+  break;
+
+  case "product?cat_id=$cat_id":
   include APP_PATH."/views/users/users_products.php";
   break;
 
