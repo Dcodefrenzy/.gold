@@ -1091,7 +1091,7 @@ function getTotalRecord($dbconn,  $record){
 }
 
 function getTotalRecordForProductId($dbconn, $hid,  $record){
-  $stmt= $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC");
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE final_category = :hid ORDER BY product_id DESC");
   $stmt->bindParam(':hid', $hid);
   $stmt->execute();
   $total_record=$stmt->rowCount();
@@ -1103,36 +1103,24 @@ function getTotalRecordForProductId($dbconn, $hid,  $record){
 
 function showProducts($dbconn, $hid, $start, $record){
   $result = " ";
-  $stmt = $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC LIMIT $start, $record");
+  $stmt = $dbconn->prepare("SELECT * FROM product WHERE final_category = :hid ORDER BY product_id DESC LIMIT $start, $record");
   $stmt->bindParam(':hid', $hid);
   $stmt -> execute();
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
-    $result .=   "<div class='col-md-4 top_brand_left'>";
-    $result .=   " <div class='hover14 column'>";
-    $result .=     "<div class='agile_top_brand_left_grid'>";
-    $result .=      "<div class=agile_top_brand_left_grid_pos>";
-    $result .=        "<img src='images/offer.png' alt=".$product_name."class='img-responsive'>
-    </div>
-    <div class='agile_top_brand_left_grid1'>
-    <figure>
-    <div class='snipcart-item block'>
-    <div class='snipcart-thumb'>
-    <a href='preview?hid=".$hash_id."'>
-    <img src=".$file_path." alt=".$product_name." class='img-responsive'>
-    <p>".$product_name."</p>
-    <h4>&#8358; ".$price." <span>&#8358; ".$old_price."</span></h4>
-    </a>
-    </div>
-    <div class='snipcart-details top_brand_home_details'>
-    <a href='preview?hid=".$hash_id."'><input type='submit' name='submit' value='Buy' class='button'></a>
-    </div>
-    </div>
-    </figure>
-    </div>
-    </div>
-    </div>
-    </div>";
+     $result .=  "<div class='col-md-4 product-left p-left'>
+                  <div class='product-main simpleCart_shelfItem'>
+                  <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+                  <div class='product-bottom'>
+                  <h3>".$product_name."</h3>
+                  <p><b>Stock- ".$inventory."</b></p>
+                  <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
+                </div>
+                <div class='srch srch1'>
+                  <span>-50%</span>
+                </div>
+              </div>
+            </div>";
 
 
   }
@@ -1143,14 +1131,18 @@ function showProducts($dbconn, $hid, $start, $record){
 function getPagination($dbconn, $hid, $record){
   $result = "";
   $prev = "1";
-  $stmt= $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC");
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE final_category = :hid ORDER BY product_id DESC");
   $stmt->bindParam(':hid', $hid);
   $stmt->execute();
   $total_record=$stmt->rowCount();
   $total_pages = ceil($total_record/$record);
   for ($i=1; $i <=$total_pages ; $i++) {
-    $result  .=   "<li class='active'><a href=product?hid=$hid&&page=".$i.">".$i."<span class='sr-only'>(current)</span></a></li>";
+    $result  .=    "<li><a href=product?hid=".$hid."&&page=".$i.">".$i."</a></li>";
+
+            "<li class='active'><a href=product?hid=$hid&&page=".$i.">".$i."<span class='sr-only'>(current)</span></a></li>";
+
   }
+
 
   return $result;
   // var_dump($result);

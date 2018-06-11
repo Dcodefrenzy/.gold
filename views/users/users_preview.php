@@ -1,9 +1,6 @@
 <?php 
 	ob_start();
 	include "includes/header2.php";
-
-
-
  ?>
 	<!--start-breadcrumbs-->
 	<div class="breadcrumbs">

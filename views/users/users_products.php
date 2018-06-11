@@ -1,6 +1,42 @@
 	<?php 
 	ob_start();
-	include "includes/header2.php"; ?>
+	include "includes/header2.php"; 
+	$record_per_page = 8;
+	$page = "";
+	if(isset($_GET['page'])){
+	$page = $_GET['page'];
+	}else{
+	$page = 1;
+	}
+														
+	$start_from = ($page-1)*$record_per_page;
+
+	if(isset($_GET['hid'])){
+		$hash_id = $_GET['hid'];
+		$show = showProducts($conn, $hash_id, $start_from, $record_per_page);
+		$pargination = getPagination($conn, $hash_id, $record_per_page);
+	 	$total_record = getTotalRecordForProductId($conn, $hid,  $record_per_page);
+
+	}else{
+ 		$show = showAllProducts($conn, $start_from, $record_per_page);
+ 		$pargination = getPaginationForAllProduct($conn,  $record_per_page);
+ 		//to get total records
+ 		 $total_record = getTotalRecord($conn,  $record_per_page);
+ 	}
+
+
+		if($page > 1){
+ 			$prev = $page - 1;
+ 		}else{
+ 			$prev = 1;
+ 		}
+ 		if($total_record > 1 &&  $page != $total_record){
+ 			$next = $page + 1;
+ 		}
+ 		else{
+ 			$next = $total_record;
+ 		}
+	?>
 
 	<!--start-breadcrumbs-->
 	<div class="breadcrumbs">
@@ -20,7 +56,8 @@
 			<div class="prdt-top">
 				<div class="col-md-9 prdt-left">
 					<div class="product-one">
-						<div class="col-md-4 product-left p-left">
+						<?php echo $show; ?>
+						<!-- <div class="col-md-4 product-left p-left">
 							<div class="product-main simpleCart_shelfItem">
 								<a href="preview" class="mask"><img class="img-responsive zoom-img" src="images/p-1.png" alt="" /></a>
 								<div class="product-bottom">
@@ -100,11 +137,11 @@
 									<span>-50%</span>
 								</div>
 							</div>
-						</div>
+						</div> -->
 						<div class="clearfix"></div>
 					</div>	
 				</div>	
-				<div class="col-md-3 prdt-right">
+				<!-- <div class="col-md-3 prdt-right">
 					<div class="w_sidebar">
 						<section  class="sky-form">
 							<h4>Catogories</h4>
@@ -184,10 +221,27 @@
 					</div>
 				</div>
 				<div class="clearfix"></div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<!--product-end-->
+	<div class="col-md-6">
+		<nav>
+			 <ul class="pagination pagination-lg">
+	<?php 	  
+		if(!isset($_GET['hid'])){
+         echo   "<li><a href='product?page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
+            	echo $pargination;
+		  echo   "<li><a href='product?page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";
+		}else{
+		
+		 echo   "<li><a href='product?hid=".$hid."&&page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
+           	echo $pargination;
+		  echo   "<li><a href='product?hid=".$hid."&&page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";	
+		}
+		?>
+         </ul>
+       </nav>
 	<?php 
 
 		include "includes/footer.php";
