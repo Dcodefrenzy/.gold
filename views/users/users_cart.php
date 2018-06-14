@@ -1,7 +1,22 @@
 
 <?php 
 ob_start();
-include "includes/header2.php"; ?>
+include "includes/header2.php"; 
+ if(!isset($_SESSION['id'])){
+ 	$user_id = $sid;
+ $row = selectCart($conn, $user_id);
+ 	extract($row);
+
+
+}else{
+ 	$user_id = $_SESSION['id'];
+
+ 		$row = selectCart($conn, $user_id);
+ 		extract($row);
+}
+
+
+?>
 	<!--bottom-header-->
 	<!--start-breadcrumbs-->
 	<div class="breadcrumbs">
@@ -24,7 +39,7 @@ include "includes/header2.php"; ?>
 			<div class="ckeckout-top">
 			<div class="cart-items">
 			 <h3>My Shopping Bag (3)</h3>
-				<script>$(document).ready(function(c) {
+		<!-- 		<script>$(document).ready(function(c) {
 					$('.close1').on('click', function(c){
 						$('.cart-header').fadeOut('slow', function(c){
 							$('.cart-header').remove();
@@ -47,18 +62,22 @@ include "includes/header2.php"; ?>
 						});
 						});	  
 					});
-			   </script>
+			   </script> -->
 				
 			<div class="in-check" >
 				<ul class="unit">
-					<li><span>Item</span></li>
-					<li><span>Product Name</span></li>		
-					<li><span>Unit Price</span></li>
-					<li><span>Delivery Details</span></li>
-					<li> </li>
+					<li style="width: 20%"><span>Item</span></li>
+					<li style="width: 20%"><span>Product Name</span></li>		
+					<li style="width: 20%"><span>update</span></li>
+					<li style="width: 20%"><span>price</span></li>
+					<li style="width: 20%"> <span>Remove</span></li>
 					<div class="clearfix"> </div>
 				</ul>
-				<ul class="cart-header">
+				<?php selectFromCart($conn, $user_id) ?>
+				<h3 class="b3">
+					<a href="checkout"><span class="label label-success">Go to checkout</span></a>
+				</h3>
+				<!-- <ul class="cart-header">
 					<div class="close1"> </div>
 						<li class="ring-in"><a href="single.html" ><img src="images/c-1.jpg" class="img-responsive" alt=""></a>
 						</li>
@@ -87,12 +106,13 @@ include "includes/header2.php"; ?>
 						<li><span>Free</span>
 						<p>Delivered in 2-3 business days</p></li>
 						<div class="clearfix"> </div>
-				</ul>
+				</ul> -->
 			</div>
 			</div>  
 		 </div>
 		</div>
 	</div>
+
 	<!--end-ckeckout-->
 	<!--footer-starts-->
 	<?php 

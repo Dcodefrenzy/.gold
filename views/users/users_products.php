@@ -1,7 +1,7 @@
 	<?php 
 	ob_start();
 	include "includes/header2.php"; 
-	$record_per_page = 8;
+	$record_per_page = 20;
 	$page = "";
 	if(isset($_GET['page'])){
 	$page = $_GET['page'];
@@ -23,11 +23,11 @@
 		$pargination = getPaginationByCatId($conn, $cat_id, $record_per_page);
 		$total_record = getTotalRecordForCatId($conn, $cat_id,  $record_per_page);
 		//fetching products by sub category 
-	}elseif (isset($_GET['sub_cat'])) {
-		$sub_cat = $_GET['sub_cat'];
+	}if(isset($_GET['sub_cat_id'])) {
+		$sub_cat = $_GET['sub_cat_id'];
 		$show = showProductsBySubCat($conn, $sub_cat, $start_from, $record_per_page);
-		$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
-		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);
+		/*$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
+		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);*/
 		//fetching All Products.
 	}else{
  		$show = showAllProducts($conn, $start_from, $record_per_page);
@@ -153,7 +153,7 @@
 						<div class="clearfix"></div>
 					</div>	
 				</div>	
-				<!-- <div class="col-md-3 prdt-right">
+				<div class="col-md-3 prdt-right">
 					<div class="w_sidebar">
 						<section  class="sky-form">
 							<h4>Catogories</h4>
@@ -233,7 +233,7 @@
 					</div>
 				</div>
 				<div class="clearfix"></div>
-			</div> -->
+			</div>
 		</div>
 	</div>
 	<!--product-end-->

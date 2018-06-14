@@ -615,7 +615,7 @@ function userLogin($dbconn, $sid,$input){
     }else{
       $mes = "Invalid Email or Password";
       $message = preg_replace('/\s+/', '_', $mes);
-      header("Location:login?msg=$message");
+      header("Location:user_login?msg=$message");
     }
     }catch(PDOException $e){
       die("no");
@@ -773,7 +773,7 @@ function updateCart($dbconn, $sid, $hid){
   $stmt->bindParam(":ui", $hid);
   $stmt->bindParam(":sid", $sid);
   $stmt->execute();
-  // header("Location:cart");
+   header("Location:cart");
   header("Location:cart");
 }catch(PDOException $e){
   die("UpdateCart Failed");
@@ -811,7 +811,7 @@ function culNav($page){
 
 function delCart($dbconn, $userID, $cart) {
   $result = "";
-  $stmt = $dbconn->prepare("DELETE FROM cart WHERE user_id=:uid AND cart_id =:cid");
+  $stmt = $dbconn->prepare("DELETE FROM cart WHERE user_id=:uid AND hash_id =:cid");
   $stmt->bindParam(":uid", $userID);
   $stmt->bindParam(":cid", $cart);
   $stmt->execute();
@@ -832,7 +832,9 @@ function selectImageFromProduct($dbconn, $product_img){
   extract($row);
   for ($i=0; $i < $count ; $i++) {
 
-    $result .= "<a href='single.html'><img src=".$file_path." alt='' class='img-responsive' /></a>";
+    $result .= "<div style='background:url(".$file_path."); height:100px; width: 100px; 
+            background-size: cover; background-position: center; 
+            background-repeat: no-repeat;'></div>";
   }
 
   return $result;
@@ -840,7 +842,7 @@ function selectImageFromProduct($dbconn, $product_img){
 }
 
 function selectFromCart($dbconn, $userID){
-
+  $error = [];
   $stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id=:id");
   $stmt->bindParam(':id', $userID);
   $stmt->execute();
@@ -849,30 +851,24 @@ function selectFromCart($dbconn, $userID){
     $single_price = $product_price / $quantity;
 
     $img = selectImageFromProduct($dbconn, $product_id);
-    echo    "<tr class='rem1'>
-    <td class='invert'>".$cart_id."</td>";
+    $inventory = viewpreviewProduct($dbconn, $product_id);
 
-    echo  "<td class='invert-image'>".$img."</td>
-    <td class='invert'>
-    <div class='quantity'>
-    <form method='post' action='updateCart?cart_id=$cart_id'>
-    <span>&#8358;".$single_price." <b>x</b></span>
-    <input type='number' value=".$quantity." name='quantity' class='btn-xsm' >
-    <input type='submit' value='Update' name='update' class='btn btn-warning' >
-    </form>
-    </div>
-    </div>
-    </td>
-    <td class='invert'>".$product_name."</td>
 
-    <td class='invert'>&#8358;".$product_price."</td>
-    <td class='invert'>
-    <div class='rem'>
-    <a href='delete?cart_id=".$cart_id."'><div class='close1'>
+    echo  "<ul class='cart-header'>
+             <li class='ring-in' style='width: 20%'>".$img."</li>
+            <li style='width: 20%'><span class='name'>".$product_name."</span></li>
+              <li style='width: 20%'><form method='post' action='updateCart?cart_id=$cart_id&&stock=$inventory'>";
 
-    </div></a></div>
-    </td>
-    </tr>";
+   echo     "<span style='width: 20%'>&#8358;".$single_price." <b>x</b></span>
+               <input  type='number' value=".$quantity." name='quantity' class='btn-xsm'size='6px'><br/>
+              <input  type='submit' value='Update' name='update' class='btn btn-warning' >
+              </form></li>
+            <li style='width: 20%'><span class='cost'>&#8358;".$product_price."</span></li>
+          <h3 class='b3'>
+            <a href='delete?cart_id=".$hash_id."'><span class='label label-warning'>delete</span></a>
+          </h3>
+          <div class='clearfix'> </div>
+        </ul>";
   }
 }
 function selectCart($dbconn, $userID){
@@ -925,45 +921,27 @@ function ViewReview($dbconn, $productid) {
   return $result;
 }
 function viewpreviewProduct($dbconn, $hid){
+  $result= "";
   $stmt = $dbconn->prepare("SELECT * FROM product WHERE hash_id = :hid");
   $stmt->bindParam(":hid", $hid);
   $stmt -> execute();
   $row = $stmt->fetch(PDO::FETCH_BOTH);
-  return $row;
+   $count= $stmt->rowCount();
+  extract($row);
+  for ($i=0; $i < $count ; $i++) {
+    $result +=$inventory;
+  }
+  return $result;
 }
 
-function fetchPreviewProductroducts($dbconn, $hid){
+function fetchPreviewProducts($dbconn, $hid){
 
   $stmt = $dbconn->prepare("SELECT * FROM product WHERE hash_id = :hid");
   $stmt->bindParam(":hid", $hid);
   $stmt -> execute();
+  $row = $stmt->fetch(PDO::FETCH_BOTH);
 
-  while($row = $stmt->fetch(PDO::FETCH_BOTH)){
-    extract($row);
-
-    echo  "<div class='products'>
-    <div class='container'>
-    <div class='agileinfo_single'>
-
-    <div class='col-md-4 agileinfo_single_left'>
-    <img id='example' src=".$file_path." alt=".$product_name." class='img-responsive'>
-    </div>
-    <div class='col-md-8 agileinfo_single_right'>
-    <h2>".$product_name." </h2>
-
-    <div class='w3agile_description'>
-    <h4>Description :</h4>
-    <p>".$description.".</p>
-    </div>
-    <div class='snipcart-item block'>
-    <div class='snipcart-thumb agileinfo_single_right_snipcart'>
-    <h4 class='m-sing'>&#8358; ".$price." <span>&#8358; ".$old_price."</span></h4>
-    </div>
-    <div class='snipcart-details agileinfo_single_right_details'>";
-
-
-
-  }
+  return $row;
 
 }
 
@@ -975,7 +953,7 @@ function fetchSubCategory($dbconn,$cid){
     extract($row);
 
            echo  "<div class='col1 me-one'>
-                    <h4><a href='product?sub_cat=".$hash_id."'>".$sub_category_name."</a></h4>";
+                    <h4><a href='product?sub_cat_id=".$hash_id."'>".$sub_category_name."</a></h4>";
                          fetchFinalCategory($dbconn, $hash_id);
             echo        "</div>";
 
@@ -1032,33 +1010,21 @@ function showAllProducts($dbconn, $start, $record){
   $stmt = $dbconn->prepare("SELECT * FROM product ORDER BY product_id DESC LIMIT $start, $record");
 
   $stmt -> execute();
-  while($row = $stmt->fetch(PDO::FETCH_BOTH)){
+ while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
-    $result .=   "<div class='col-md-4 top_brand_left'>";
-    $result .=   " <div class='hover14 column'>";
-    $result .=     "<div class='agile_top_brand_left_grid'>";
-    $result .=      "<div class=agile_top_brand_left_grid_pos>";
-    $result .=     "<a href='preview?hid=".$hash_id."'><img src='images/offer.png' alt='' class='img-responsive'></a>
-    </div>
-    <div class='agile_top_brand_left_grid1'>
-    <figure>
-    <div class='snipcart-item block'>
-    <div class='snipcart-thumb'>
-    <a href='preview?hid=".$hash_id."'>
-    <img src=".$file_path." alt=".$product_name." class='img-responsive'>
-    <p>".$product_name."</p>
-    <h4>&#8358; ".$price." <span>&#8358; ".$old_price."</span></h4>
-    </a>
-    </div>
-    <div class='snipcart-details top_brand_home_details'>
-    <a href='preview?hid=".$hash_id."'><input type='submit' name='submit' value='Buy' class='button'></a>
-    </div>
-    </div>
-    </figure>
-    </div>
-    </div>
-    </div>
-    </div>";
+     $result .=  "<div class='col-md-4 product-left p-left'>
+                  <div class='product-main simpleCart_shelfItem'>
+                  <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+                  <div class='product-bottom'>
+                  <h3>".$product_name."</h3>
+                  <p><b>Stock- ".$inventory."</b></p>
+                  <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
+                </div>
+                <div class='srch srch1'>
+                  <span>-50%</span>
+                </div>
+              </div>
+            </div>";
   }
   return $result;
 }
@@ -1397,7 +1363,10 @@ function getCart($dbconn,$user){
   return $count;
 
 }
+/*function checkInventory($dbconn, $){
 
+}
+*/
 
 
 

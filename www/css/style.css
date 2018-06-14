@@ -1505,7 +1505,7 @@ ul.unit {
 }
 ul.unit li {
     display: inline-block;
-    width: 25%;
+    width: 20%;
     float: left;
 }
 ul.cart-header li p,ul.cart-header1 li p,ul.cart-header2 li p{

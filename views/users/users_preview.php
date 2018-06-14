@@ -1,6 +1,52 @@
 <?php 
 	ob_start();
 	include "includes/header2.php";
+	if(!isset($_SESSION['id'])){
+	$user_id = $sid;
+
+	}else{
+	$user_id = $_SESSION['id'];
+
+	}
+	if(isset($_GET['hid'])){
+	$id = $_GET['hid'];
+}else{
+	header('Location:home');
+}
+
+/*	 $result = viewpreviewProduct($conn, $hash_id);
+	 extract($result);*/
+
+	$show = fetchPreviewProducts($conn, $id);
+	extract($show);
+	if ($id!=$hash_id ) {
+		header('Location:home');
+	}
+
+
+	$error = [];
+
+	if(array_key_exists("submit", $_POST)){
+		if(empty($_POST['quantity'])){
+			$error['quantity'] = "Please add quantity";
+		}
+		if(!is_numeric($_POST['quantity'])){
+			$error['quantity'] = "Please add numeric value";
+		}
+		if($inventory < $_POST['quantity']){
+			$error['quantity'] = "<div class='alert alert-danger' role='alert'>
+										<strong>whoops!</strong> The quantity you entered is more that stocked 
+			  						 </div>";
+		}
+		if(empty($error)){
+			$clean = array_map('trim', $_POST);
+			$total_price = $clean['quantity'] * $price;
+
+			addToCart($conn, $user_id, $hash_id, $product_name, $total_price,$price, $clean);
+		}
+	}
+
+
  ?>
 	<!--start-breadcrumbs-->
 	<div class="breadcrumbs">
@@ -24,14 +70,14 @@
 						<div class="flexslider">
 							  <ul class="slides">
 								<li data-thumb="images/s-1.jpg">
-									<div class="thumb-image"> <img src="images/s-1.jpg" data-imagezoom="true" class="img-responsive" alt=""/> </div>
+									<div class="thumb-image"> <img src=<?php echo $file_path; ?> data-imagezoom="true" class="img-responsive" alt=""/> </div>
 								</li>
-								<li data-thumb="images/s-2.jpg">
+							<!-- 	<li data-thumb="images/s-2.jpg">
 									 <div class="thumb-image"> <img src="images/s-2.jpg" data-imagezoom="true" class="img-responsive" alt=""/> </div>
 								</li>
 								<li data-thumb="images/s-3.jpg">
 								   <div class="thumb-image"> <img src="images/s-3.jpg" data-imagezoom="true" class="img-responsive" alt=""/> </div>
-								</li> 
+								</li>  -->
 							  </ul>
 						</div>
 						<!-- FlexSlider -->
@@ -51,26 +97,29 @@
 					</div>	
 					<div class="col-md-7 single-top-right">
 						<div class="single-para simpleCart_shelfItem">
-						<h2>Lorem Ipsum</h2>
+						<h2><?php echo $product_name; ?></h2>
 							<div class="star-on">
-								<ul class="star-footer">
+							<!-- 	<ul class="star-footer">
 										<li><a href="#"><i> </i></a></li>
 										<li><a href="#"><i> </i></a></li>
 										<li><a href="#"><i> </i></a></li>
 										<li><a href="#"><i> </i></a></li>
 										<li><a href="#"><i> </i></a></li>
-									</ul>
+									</ul> -->
 								<div class="review">
-									<a href="#"> 1 customer review </a>
+									<a href="#"><b>Stock <?php echo $inventory  ?></b> </a>
 									
 								</div>
 							<div class="clearfix"> </div>
 							</div>
 							
-							<h5 class="item_price">$ 95.00</h5>
-							<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+							<h5 class="item_price"><?php echo $price; ?></h5>
+							<p><?php echo $description; ?></p>
 							<div class="available">
-								<ul>
+								<form method="POST">
+									 <?php $display = displayErrors($error, 'quantity'); echo $display; ?>
+									<input type="number" name="quantity" placeholder="Quantity" required="" size="5">
+								<!-- <ul>
 									<li>Color
 										<select>
 										<option>Silver</option>
@@ -86,21 +135,21 @@
 									<option>small</option>
 								</select></li>
 								<div class="clearfix"> </div>
-							</ul>
+							</ul> -->
 						</div>
-							<ul class="tag-men">
+							<!-- <ul class="tag-men">
 								<li><span>TAG</span>
 								<span class="women1">: Women,</span></li>
 								<li><span>SKU</span>
 								<span class="women1">: CK09</span></li>
-							</ul>
-								<a href="#" class="add-cart item_add">ADD TO CART</a>
-							
+							</ul> -->
+								<input type="submit" value="Add to Cart" name="submit" class='btn btn-warning'>
+							</form>
 						</div>
 					</div>
 					<div class="clearfix"> </div>
 				</div>
-				<div class="tabs">
+				<!-- <div class="tabs">
 					<ul class="menu_drop">
 				<li class="item1"><a href="#"><img src="images/arrow.png" alt="">Description</a>
 					<ul>
@@ -136,7 +185,7 @@
 					</ul>
 				</li>
 	 		</ul>
-				</div>
+				</div> -->
 				<div class="latestproducts">
 					<div class="product-one">
 						<div class="col-md-4 product-left p-left"> 
