@@ -36,10 +36,13 @@ $cart_id = NULL;
 if(isset($_GET['cart_id'])){
   $cart_id = $_GET['cart_id'];
 }
-  $sub_cat_id = NULL;
-  if (isset($_GET['sub_cat_id'])) {
-    $sub_cat_id = 'sub_cat_id';
-  }
+
+if (isset($_GET['sub_cat_id'])) {
+  $sub_cat_id = $_GET['sub_cat_id'];
+}
+
+
+
   $hid = NULL;
   if(isset($_GET['hid'])){
     $hid = $_GET['hid'];
@@ -223,15 +226,12 @@ switch ($uri[1]) {
   include APP_PATH."/views/users/users_products.php";
   break;
 
+
   case "product?sub_cat_id=$sub_cat_id":
   include APP_PATH."/views/users/users_products.php";
   break;
 
-  /*case "product?sub_cat_id=$sub_cat_id":
-  include APP_PATH."/views/users/users_products.php";
-  break;*/
-
-  case "product?cat_id=$cat_id":
+   case "product?cat_id=$cat_id":
   include APP_PATH."/views/users/users_products.php";
   break;
 
@@ -314,13 +314,10 @@ switch ($uri[1]) {
 
 
   
-  case "comfirmation?user_id=$user_id":
-  include APP_PATH."/views/users/comfirmation.php";
+  case "confirmation":
+  include APP_PATH."/views/users/confirmation.php";
   break;
 
-  case "comfirmation":
-  include APP_PATH."/views/users/users_home.php";
-  break;
 
   case "updateCart?cart_id=$cart_id&&stock=$inventory":
   include APP_PATH."/views/users/update_cart.php";

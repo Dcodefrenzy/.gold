@@ -11,15 +11,15 @@ include 'includes/header.php';
 	}if (isset($_GET['stock'])) {
 		$stock = $_GET['stock'];
 	}
-
+			$error = [];
 
 		if(array_key_exists("update", $_POST)){
 			if(empty($_POST['quantity'])){
 				$error['quantity'] = "Please input a value";
 				 }
-			if ($stock < $_POST['quantity']) {
-				 $msg= 'Whoops! The quantity you entered is more than stocked';
-				 header('Location:cart?msg='.$msg.'');
+			if ($stock < $_POST['quantity'] || $_POST['quantity'] < 1) {
+				 $error['quantity']= 'Whoops! The quantity you entered is more than stocked';
+				 header("Location:cart");
 				 } else{ $clean = array_map("trim",$_POST);
 					editCart($conn,$clean,$_GET['cart_id']);
 			}

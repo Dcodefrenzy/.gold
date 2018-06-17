@@ -33,7 +33,7 @@
 		if(!is_numeric($_POST['quantity'])){
 			$error['quantity'] = "Please add numeric value";
 		}
-		if($inventory < $_POST['quantity']){
+		if($inventory < $_POST['quantity'] || $_POST['quantity'] < 1){
 			$error['quantity'] = "<div class='alert alert-danger' role='alert'>
 										<strong>whoops!</strong> The quantity you entered is more that stocked 
 			  						 </div>";

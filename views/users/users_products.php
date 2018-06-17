@@ -17,18 +17,18 @@
 		$pargination = getPagination($conn, $hash_id, $record_per_page);
 	 	$total_record = getTotalRecordForProductId($conn, $hid,  $record_per_page);
 	 	//fetching products by main category
+	}elseif(isset($_GET['sub_cat_id'])) {
+		$sub_cat = $_GET['sub_cat_id'];
+		$show = showProductsBySubCat($conn, $sub_cat, $start_from, $record_per_page);
+		$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
+		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);
+		//fetching All Products.
 	}elseif(isset($_GET['cat_id'])){
 		$cat_id = $_GET['cat_id'];
 		$show = showProductsByCatId($conn, $cat_id, $start_from, $record_per_page);
 		$pargination = getPaginationByCatId($conn, $cat_id, $record_per_page);
 		$total_record = getTotalRecordForCatId($conn, $cat_id,  $record_per_page);
 		//fetching products by sub category 
-	}if(isset($_GET['sub_cat_id'])) {
-		$sub_cat = $_GET['sub_cat_id'];
-		$show = showProductsBySubCat($conn, $sub_cat, $start_from, $record_per_page);
-		/*$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
-		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);*/
-		//fetching All Products.
 	}else{
  		$show = showAllProducts($conn, $start_from, $record_per_page);
  		$pargination = getPaginationForAllProduct($conn,  $record_per_page);

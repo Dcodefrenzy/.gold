@@ -144,7 +144,7 @@ function addCategory($dbconn, $post){
 
 function addSubCategory($dbconn, $post){
   $rnd = rand(0000000000,9999999999);
-  $hash_id = 'sub'.$rnd;
+  $hash_id = '_cat'.$rnd;
 
 
   $stmt = $dbconn->prepare("INSERT INTO sub_category(category_id, sub_category_name,hash_id, date_created) VALUES(:cat_id,:scat,:hid,NOW())");
@@ -842,7 +842,7 @@ function selectImageFromProduct($dbconn, $product_img){
 }
 
 function selectFromCart($dbconn, $userID){
-  $error = [];
+  $error = "";
   $stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id=:id");
   $stmt->bindParam(':id', $userID);
   $stmt->execute();
@@ -852,21 +852,26 @@ function selectFromCart($dbconn, $userID){
 
     $img = selectImageFromProduct($dbconn, $product_id);
     $inventory = viewpreviewProduct($dbconn, $product_id);
+      if ($inventory < $quantity) {
+          $error = '<div class="alert alert-danger" role="alert">
+                    <strong>whoops!</strong> The quantity you entered is more that stocked 
+                     </div>';
+      }
 
-
-    echo  "<ul class='cart-header'>
-             <li class='ring-in' style='width: 20%'>".$img."</li>
+    echo  "$error
+              <ul class='cart-header'>
+            <a href='delete?cart_id=".$hash_id."'><div class='close1'></div> </a>
+             <li class='ring-in' style='width: 20%'><span class='name'>".$img."</span</li>
             <li style='width: 20%'><span class='name'>".$product_name."</span></li>
               <li style='width: 20%'><form method='post' action='updateCart?cart_id=$cart_id&&stock=$inventory'>";
 
-   echo     "<span style='width: 20%'>&#8358;".$single_price." <b>x</b></span>
-               <input  type='number' value=".$quantity." name='quantity' class='btn-xsm'size='6px'><br/>
+   echo     "<span style='width: 20%'>&#8358;".$single_price." <b>x</b></span>";
+                                       
+     echo          "<input  type='number' value=".$quantity." name='quantity' class='btn-xsm'size='6px'><br/>
               <input  type='submit' value='Update' name='update' class='btn btn-warning' >
-              </form></li>
+           </form></li>
             <li style='width: 20%'><span class='cost'>&#8358;".$product_price."</span></li>
-          <h3 class='b3'>
-            <a href='delete?cart_id=".$hash_id."'><span class='label label-warning'>delete</span></a>
-          </h3>
+
           <div class='clearfix'> </div>
         </ul>";
   }
@@ -1213,8 +1218,8 @@ function addCheckout($dbconn, $userID, $input){
   $result = getProductsFromCart($dbconn, $userID);
   $stmt = $dbconn->prepare("INSERT INTO checkout(name, phone_number, adress, product_info, user_id, date_added) VALUES(:na, :ph, :ad, :pi, :uid, NOW())");
   $data = [
-    ':na' => $input['fname'],
-    ':ph' => $input['pnumber'],
+    ':na' => $input['name'],
+    ':ph' => $input['phone_number'],
     ':ad' => $input['adress'],
     ':pi' => $result,
     ':uid' =>$userID,
@@ -1244,10 +1249,18 @@ function displayCheckout($dbconn, $userID){
 
     $product_count = count($product_price);
     for ($i=0; $i < $product_count ; $i++) {
-      echo "<li>".$product_name."  (".$quantity.")"." <i>-</i> <span>&#8358;".$product_price." </span></li>";
+     echo  "<ul class='cart-header'>
+             <li class='ring-in' style='width: 20%'><span class='name'>".$product_name."</span></li>
+            <li style='width: 20%'><span class='name'>".$quantity."</span></li>
+            <li style='width: 20%'><span class='name'>&#8358;".$product_price."</span></li>
+            <div class='clearfix'> </div>
+            </ul>";
+             
+
     }
   }
-  echo "<li><h5>Total <i>-</i> <span>&#8358;".$total_price."</span></h5></li>";
+  echo "<ul class='cart-header'><li> <span class='name'><h5>Total <i>-</i>&#8358;".$total_price."</span></h5></li><div class='clearfix'> </div>
+            </ul>";
 }
 function get_page($dbconn, $start){
   $stmt = $dbconn->prepare("SELECT * FROM product ORDER BY product_id DESC LIMIT $start");
@@ -1363,11 +1376,19 @@ function getCart($dbconn,$user){
   return $count;
 
 }
-/*function checkInventory($dbconn, $){
+function checkInventory($dbconn, $userID){
+$stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id = :pi");
+$stmt->bindParam(':pi', $userID);
+$stmt->execute();
+while ($row = $stmt->fetch(PDO::FETCH_BOTH)) {
+      extract($row);
+    $inventory = viewpreviewProduct($dbconn, $product_id);
+
+      if ($inventory < $quantity || $quantity < 1) {
+        header('Location:cart');
+      }
+}
 
 }
-*/
-
-
 
 ?>

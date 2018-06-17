@@ -2,17 +2,19 @@
 <?php 
 ob_start();
 include "includes/header2.php"; 
+ 
  if(!isset($_SESSION['id'])){
  	$user_id = $sid;
  $row = selectCart($conn, $user_id);
  	extract($row);
-
 
 }else{
  	$user_id = $_SESSION['id'];
 
  		$row = selectCart($conn, $user_id);
  		extract($row);
+}if (isset($_GET['msg'])) {
+	$msg = $_GET ['msg'];
 }
 
 
