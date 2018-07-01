@@ -1,5 +1,6 @@
 <?php 
 ob_start();
+$page_title = "Register";
 include "includes/header2.php"; 
 	
 	$error = [];
@@ -25,14 +26,14 @@ if(array_key_exists('register', $_POST)){
     $error['pnumber']="Enter a email";
   }
 
-  if(empty($_POST['password'])){
-    $error['password']="Enter a password";
+  if(empty($_POST['hash'])){
+    $error['hash']="Enter a Password";
   }
   if(empty($_POST['pword'])){
     $error['pword']="enter confirm password";
   }
 
-  if($_POST['pword']!=$_POST['password']){
+  if($_POST['pword']!=$_POST['hash']){
     $error['pword']="Password mismatch";
   }
 
@@ -84,8 +85,8 @@ if(array_key_exists('register', $_POST)){
 						<input placeholder="Mobile" type="text" tabindex="3" required name="pnumber">
 				</div>
 				<div class="col-md-6 account-left">
-					<?php  $display = displayErrors($error, 'password'); echo $display; ?>
-					<input placeholder="Password" type="password" tabindex="4" required name="password">
+					<?php  $display = displayErrors($error, 'hash'); echo $display; ?>
+					<input placeholder="Password" type="password" tabindex="4" required name="hash">
 					<?php  $display = displayErrors($error, 'pword'); echo $display; ?>
 						<input placeholder="Retype password" type="password" tabindex="4" required name="pword">
 				</div>

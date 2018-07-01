@@ -1,5 +1,6 @@
 	<?php 
 	ob_start();
+	$page_title = "products";
 	include "includes/header2.php"; 
 	$record_per_page = 20;
 	$page = "";
@@ -18,10 +19,10 @@
 	 	$total_record = getTotalRecordForProductId($conn, $hid,  $record_per_page);
 	 	//fetching products by main category
 	}elseif(isset($_GET['sub_cat_id'])) {
-		$sub_cat = $_GET['sub_cat_id'];
-		$show = showProductsBySubCat($conn, $sub_cat, $start_from, $record_per_page);
-		$pargination = getPaginationBySubCat($conn, $sub_cat, $record_per_page);
-		$total_record = getTotalRecordForSubCat($conn, $sub_cat,  $record_per_page);
+		$sub_cat_id = $_GET['sub_cat_id'];
+		$show = showProductsBySubCat($conn, $sub_cat_id, $start_from, $record_per_page);
+		$pargination = getPaginationBySubCat($conn, $sub_cat_id, $record_per_page);
+		$total_record = getTotalRecordForSubCat($conn, $sub_cat_id,  $record_per_page);
 		//fetching All Products.
 	}elseif(isset($_GET['cat_id'])){
 		$cat_id = $_GET['cat_id'];
@@ -241,15 +242,22 @@
 		<nav>
 			 <ul class="pagination pagination-lg">
 	<?php 	  
-		if(!isset($_GET['hid'])){
-         echo   "<li><a href='product?page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
-            	echo $pargination;
-		  echo   "<li><a href='product?page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";
-		}else{
-		
-		 echo   "<li><a href='product?hid=".$hid."&&page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
+		if(isset($_GET['hid'])){
+				 echo   "<li><a href='product?hid=".$hid."&&page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
            	echo $pargination;
 		  echo   "<li><a href='product?hid=".$hid."&&page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";	
+
+       
+		}elseif (isset($_GET['sub_cat_id'])) {
+			 echo   "<li><a href='product?sub_cat_id=".$sub_cat_id."&&page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
+            	echo $pargination;
+		  echo   "<li><a href='product?sub_cat_id=".$sub_cat_id."&&page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";
+			
+		} else{
+		
+		  echo   "<li><a href='product?page=".$prev."' aria-label='Previous'><span aria-hidden='true'>«</span></a></li>";
+            	echo $pargination;
+		  echo   "<li><a href='product?page=".$next."' aria-label='Next'><span aria-hidden='true'>»</span></a></li>";
 		}
 		?>
          </ul>

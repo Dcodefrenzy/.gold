@@ -1,5 +1,6 @@
 	<?php 
 	ob_start();
+	$page_title = "contact";
 	include "includes/header2.php";
 
 	 ?>

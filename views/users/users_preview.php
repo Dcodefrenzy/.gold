@@ -1,5 +1,6 @@
 <?php 
 	ob_start();
+	$page_title = "preview";
 	include "includes/header2.php";
 	if(!isset($_SESSION['id'])){
 	$user_id = $sid;
@@ -19,6 +20,10 @@
 
 	$show = fetchPreviewProducts($conn, $id);
 	extract($show);
+	  if ($inventory == 0) {
+		$inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+		}
+
 	if ($id!=$hash_id ) {
 		header('Location:home');
 	}
@@ -53,7 +58,7 @@
 		<div class="container">
 			<div class="breadcrumbs-main">
 				<ol class="breadcrumb">
-					<li><a href="index.html">Home</a></li>
+					<li><a href="home">Home</a></li>
 					<li class="active">Single</li>
 				</ol>
 			</div>
@@ -116,35 +121,25 @@
 							<h5 class="item_price"><?php echo $price; ?></h5>
 							<p><?php echo $description; ?></p>
 							<div class="available">
+								<?php 
+
+										  if ($inventory == 0) {
+										echo  	"<form action='home'>
+     									 <div  class='btn btn-warning'><a href='product' style=color:white; >Out Of Stock</a></div>
+     									</div>
+									</form>";
+   										}else{
+								 ?>
 								<form method="POST">
 									 <?php $display = displayErrors($error, 'quantity'); echo $display; ?>
 									<input type="number" name="quantity" placeholder="Quantity" required="" size="5">
-								<!-- <ul>
-									<li>Color
-										<select>
-										<option>Silver</option>
-										<option>Black</option>
-										<option>Dark Black</option>
-										<option>Red</option>
-									</select></li>
-								<li class="size-in">Size<select>
-									<option>Large</option>
-									<option>Medium</option>
-									<option>small</option>
-									<option>Large</option>
-									<option>small</option>
-								</select></li>
-								<div class="clearfix"> </div>
-							</ul> -->
-						</div>
-							<!-- <ul class="tag-men">
-								<li><span>TAG</span>
-								<span class="women1">: Women,</span></li>
-								<li><span>SKU</span>
-								<span class="women1">: CK09</span></li>
-							</ul> -->
+									
+								</div>
 								<input type="submit" value="Add to Cart" name="submit" class='btn btn-warning'>
+
 							</form>
+							<?php } ?>
+
 						</div>
 					</div>
 					<div class="clearfix"> </div>
@@ -186,7 +181,8 @@
 				</li>
 	 		</ul>
 				</div> -->
-				<div class="latestproducts">
+				<?php userDisplayTopSelling($conn) ?>
+			<!-- 	<div class="latestproducts">
 					<div class="product-one">
 						<div class="col-md-4 product-left p-left"> 
 							<div class="product-main simpleCart_shelfItem">
@@ -308,7 +304,7 @@
 								</div>
 							</div>						
 						</section>
-					</div>
+					</div> -->
 				</div>
 				<div class="clearfix"> </div>
 			</div>

@@ -1,6 +1,8 @@
 <?php 
 ob_start();
+$page_title = "Home";
 include "includes/header.php"; 
+
 ?>
 
 	<!--about-end-->

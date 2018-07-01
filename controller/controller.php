@@ -603,7 +603,9 @@ function userLogin($dbconn, $sid,$input){
     $stmt ->bindParam(":e", $input['email']);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_BOTH);
+
     if($stmt->rowCount() > 0 && password_verify($input['hash'], $row['hash'])){
+
 
       extract($row);
       
@@ -1017,6 +1019,9 @@ function showAllProducts($dbconn, $start, $record){
   $stmt -> execute();
  while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
+      if ($inventory == 0) {
+      $inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+    }
      $result .=  "<div class='col-md-4 product-left p-left'>
                   <div class='product-main simpleCart_shelfItem'>
                   <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
@@ -1082,6 +1087,18 @@ function getTotalRecordForCatId($dbconn, $hid, $record){
   return $total_pages;
 
 }
+
+function getTotalRecordForSubCat($dbconn, $hid, $record){
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC");
+  $stmt->bindParam(':hid', $hid);
+  $stmt->execute();
+  $total_record=$stmt->rowCount();
+
+  $total_pages = ceil($total_record/$record);
+  return $total_pages;
+
+}
+
 function showProductsBySubCat($dbconn, $hid, $start, $record){
     $result = " ";
   $stmt = $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC LIMIT $start, $record");
@@ -1089,6 +1106,9 @@ function showProductsBySubCat($dbconn, $hid, $start, $record){
   $stmt -> execute();
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
+    if ($inventory == 0) {
+      $inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+    }
      $result .=  "<div class='col-md-4 product-left p-left'>
                   <div class='product-main simpleCart_shelfItem'>
                   <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
@@ -1115,6 +1135,9 @@ function showProductsByCatId($dbconn, $hid, $start, $record){
   $stmt -> execute();
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
+      if ($inventory == 0) {
+      $inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+    }
      $result .=  "<div class='col-md-4 product-left p-left'>
                   <div class='product-main simpleCart_shelfItem'>
                   <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
@@ -1140,6 +1163,9 @@ function showProducts($dbconn, $hid, $start, $record){
   $stmt -> execute();
   while($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
+      if ($inventory == 0) {
+      $inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+    }
      $result .=  "<div class='col-md-4 product-left p-left'>
                   <div class='product-main simpleCart_shelfItem'>
                   <a href='preview?hid=".$hash_id."' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
@@ -1169,13 +1195,30 @@ function getPagination($dbconn, $hid, $record){
   $total_record=$stmt->rowCount();
   $total_pages = ceil($total_record/$record);
   for ($i=1; $i <=$total_pages ; $i++) {
-    $result  .=    "<li><a href=product?hid=".$hid."&&page=".$i.">".$i."</a></li>";
+    $result  .=    "<li><a href=product?pid=".$hid."&&page=".$i.">".$i."</a></li>";
 
-            "<li class='active'><a href=product?hid=$hid&&page=".$i.">".$i."<span class='sr-only'>(current)</span></a></li>";
+            
   }
   return $result;
-  // var_dump($result);
+
 }
+  function getPaginationBySubCat($dbconn, $hid, $record){
+
+  $result = "";
+  $prev = "1";
+  $stmt= $dbconn->prepare("SELECT * FROM product WHERE sub_category = :hid ORDER BY product_id DESC");
+  $stmt->bindParam(':hid', $hid);
+  $stmt->execute();
+  $total_record=$stmt->rowCount();
+  $total_pages = ceil($total_record/$record);
+  for ($i=1; $i <=$total_pages ; $i++) {
+    $result  .=    "<li><a href=product?pid=".$hid."&&page=".$i.">".$i."</a></li>";
+
+            
+  }
+  return $result;
+  
+  }
 
  function getPaginationByCatId($dbconn, $hid, $record){
     $result = "";
@@ -1186,7 +1229,7 @@ function getPagination($dbconn, $hid, $record){
   $total_record=$stmt->rowCount();
   $total_pages = ceil($total_record/$record);
   for ($i=1; $i <=$total_pages ; $i++) {
-    $result  .=    "<li><a href=product?hid=".$hid."&&page=".$i.">".$i."</a></li>";
+    $result  .=    "<li><a href=product?pid=".$hid."&&page=".$i.">".$i."</a></li>";
 
     }
     return $result;
@@ -1200,7 +1243,7 @@ function getProductsFromCart($dbconn, $userID){
   while ($row = $stmt->fetch(PDO::FETCH_BOTH)){
     extract($row);
     //$result = implode(" ", $row);
-    $result .= "<p>".$product_name.", ".$file_path.", &#8358;".$product_price.", ".$product_id."</p>";
+    $result .= "<p>".$product_name.", ".$file_path.", &#8358;".$product_price.", ".$product_id.", ".$quantity."</p>";
     /*$count_result = count($result);
     if($count_result < 0){
     header("Location:home");
@@ -1210,23 +1253,70 @@ function getProductsFromCart($dbconn, $userID){
 return $result;
 
 }
+ 
+ function getProductForInventory($dbconn, $productId){
+ 
+  $stmt = $dbconn->prepare("SELECT * FROM product WHERE hash_id = :pid");
+  $stmt->bindParam(":pid", $productId);
+  $stmt->execute();
+  while ($row = $stmt->fetch(PDO::FETCH_BOTH)){
+    extract($row);
+      $result = $inventory;
+  }
+  return $result;
+}
+
+function getQuantityforinventory($dbconn, $userID){
+
+  $result = [];
+  $stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id = :uid");
+  $stmt->bindParam(":uid", $userID);
+  $stmt->execute();
+  while ($row = $stmt->fetch(PDO::FETCH_BOTH)){
+    extract($row);
+     $inventory = getProductForInventory($dbconn, $product_id);
+     $newQuantity = $inventory - $quantity;
+     
+       update_product($dbconn, $newQuantity, $product_id);
+           
+  }
+}
 
 
+function update_product($dbconn, $quantity, $productId){
+   
+  $stmt= $dbconn->prepare("UPDATE product SET inventory = :inv WHERE hash_id = :pid ");
+  $data= [
+        ":inv" => $quantity,
+        ":pid" => $productId,
+  ];
+  $stmt->execute($data);
+  
+}
 
 function addCheckout($dbconn, $userID, $input){
-  //Invocked get product from cart
+  try {
+    
+  
+  $rnd = rand(0000000000,9999999999);
+  $hash_id = $input['name'].$rnd;
   $result = getProductsFromCart($dbconn, $userID);
-  $stmt = $dbconn->prepare("INSERT INTO checkout(name, phone_number, adress, product_info, user_id, date_added) VALUES(:na, :ph, :ad, :pi, :uid, NOW())");
+  $stmt = $dbconn->prepare("INSERT INTO checkout(name, phone_number, adress, product_info, user_id, hash, date_added) VALUES(:na, :ph, :ad, :pi, :uid, :hid, NOW()) ");
   $data = [
     ':na' => $input['name'],
     ':ph' => $input['phone_number'],
     ':ad' => $input['adress'],
     ':pi' => $result,
     ':uid' =>$userID,
+    ':hid'=>$hash_id,
   ];
   $stmt->execute($data);
   $user_id = $userID;
-  header("Location:confirmation");
+  } catch (Exception $e) {
+    echo "whoops";
+  }
+
+  header("Location:confirmation?hash_id=$hash_id");
 }
 
 
@@ -1236,7 +1326,7 @@ function displayCheckout($dbconn, $userID){
   $total_price = 0;
   $all_price = 0;
   $all_quantity = 0;
-  $stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id = :uid");
+  $stmt = $dbconn->prepare("SELECT * FROM cart WHERE user_id = :uid ");
   $stmt->bindParam(":uid", $userID);
   $stmt->execute();
   while($result = $stmt->fetch(PDO::FETCH_BOTH)){
@@ -1262,6 +1352,31 @@ function displayCheckout($dbconn, $userID){
   echo "<ul class='cart-header'><li> <span class='name'><h5>Total <i>-</i>&#8358;".$total_price."</span></h5></li><div class='clearfix'> </div>
             </ul>";
 }
+
+function displayCustomerCheckout($dbconn, $userID, $hash){
+
+  $stmt = $dbconn->prepare("SELECT * FROM checkout WHERE user_id = :uid AND hash = :hid");
+  $stmt->bindParam(":uid", $userID);
+  $stmt->bindParam(":hid", $hash);
+  $stmt->execute();
+  $result = $stmt->fetch(PDO::FETCH_BOTH);
+
+    extract($result);
+
+
+     echo "<div style='text-align: center; class='col-md-3 account-right account-left'>
+          <div class='in-check' 'align='center' class='col-md-3 account-right account-left' >
+            <ul class='unit'>
+            <h3>Customer Information</h3>
+            <p><b>Name: </b>".$name."</p>
+            <p><b>Phone number: </b>".$phone_number."</p>
+            <p><b>Adress: </b>".$adress."</p>
+            </ul>";
+             
+
+  
+
+}
 function get_page($dbconn, $start){
   $stmt = $dbconn->prepare("SELECT * FROM product ORDER BY product_id DESC LIMIT $start");
 }
@@ -1276,12 +1391,15 @@ function userDisplayTopSelling($dbconn){
   while ($row = $stmt->fetch(PDO::FETCH_BOTH)){
     $count = $stmt->rowCount();
     extract($row);
+     if ($inventory == 0) {
+    $inventory= "<h4 style=color:red;>Out Of Stock!</h4>";
+    }
 echo   "<div class='col-md-3 product-left'>
             <div class='product-main simpleCart_shelfItem'>
-              <a href='preview' class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
+              <a href='preview?hid=".$hash_id."'class='mask'><img class='img-responsive zoom-img' src=".$file_path." alt=".$product_name." /></a>
               <div class='product-bottom'>
                 <h3>".$product_name."</h3>
-                <p>Explore Now</p>'
+                <p>Stock- ".$inventory."</p>'
                 <h4><a class='item_add' href='preview?hid=".$hash_id."'><i></i></a> <span class=' item_price'>".$price."</span></h4>
               </div>
               <div class='srch'>
@@ -1372,7 +1490,7 @@ function getCart($dbconn,$user){
     extract($row);
     $count += $quantity;
   }
-  // var_dump($count);
+
   return $count;
 
 }

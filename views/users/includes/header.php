@@ -1,8 +1,19 @@
-<?php 
-	session_start();
-	$sid = md5(session_id());
+<?php
+$welcome = "";
+session_start();
+$sid = md5(session_id());
+$cart_numb = 0;
+if(isset($_SESSION['username']) && ($_SESSION['id'])){
+ 	$fullname = $_SESSION['username'];
+ 	$user_id = $_SESSION['id'];
+ 	$welcome ="<li><a style='color:white;' href=''>welcome ".$fullname."</a></li>";
 
- ?>
+ 	$cart_numb = getCart($conn, $user_id);
+
+}else{
+  $cart_numb = getCart($conn, $sid);
+}
+?>
  <!--ADesign by W3layouts 
 Author: W3layout
 Author URL: http://w3layouts.com
@@ -12,7 +23,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE html>
 <html>
 <head>
-<title>Luxury Watches A Ecommerce Category Flat Bootstrap Resposive Website Template | Home :: w3layouts</title>
+<title>MaryGold/<?php echo $page_title ?></title>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
 <!--jQuery(necessary for Bootstrap's JavaScript plugins)-->
 <script src="js/jquery-1.11.0.min.js"></script>
@@ -41,19 +52,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				<div class="col-md-6 top-header-left">
 					<div class="drop">
 						<div class="box">
-							<select tabindex="4" class="dropdown drop">
-								<option value="" class="label">Dollar :</option>
-								<option value="1">Dollar</option>
-								<option value="2">Euro</option>
-							</select>
+												<?php
+									if(isset($_SESSION['id']) && isset($_SESSION['username'])){
+
+         									 echo $welcome; ?>
+									
+        								<?php }else{ ?>
+								<a style="color:white;" href="login">Login</a>
+								
 						</div>
 						<div class="box1">
-							<select tabindex="4" class="dropdown">
+							<a style="color:white;" href="register">Register</a>
+							<?php } ?>
+						<!-- 	<select tabindex="4" class="dropdown">
 								<option value="" class="label">English :</option>
 								<option value="1">English</option>
 								<option value="2">French</option>
 								<option value="3">German</option>
-							</select>
+							</select> -->
 						</div>
 						<div class="clearfix"></div>
 					</div>

@@ -28,7 +28,7 @@ if(array_key_exists('login', $_POST)){
 		<div class="container">
 			<div class="breadcrumbs-main">
 				<ol class="breadcrumb">
-					<li><a href="hime">Home</a></li>
+					<li><a href="home">Home</a></li>
 					<li class="active">Login</li>
 				</ol>
 			</div>
@@ -47,9 +47,9 @@ if(array_key_exists('login', $_POST)){
 					<div class="account-bottom">
 						<form method="POST">
 							<?php $display = displayErrors($error, 'email'); echo $display; ?>
-						<input placeholder="Email" type="text" tabindex="3" required name="email">
+						<input placeholder="Email" type="text" tabindex="3" required="" name="email">
 						<?php $display = displayErrors($error, 'hash'); echo $display; ?>
-						<input placeholder="password" type="password" tabindex="4" required name="hash">
+						<input placeholder="password" type="password" tabindex="4" required="" name="hash">
 						<div class="address">
 							<a class="forgot" href="#">Forgot Your Password?</a>
 							<input type="submit" value="Login" name="login">

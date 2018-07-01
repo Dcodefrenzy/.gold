@@ -36,7 +36,7 @@ $cart_id = NULL;
 if(isset($_GET['cart_id'])){
   $cart_id = $_GET['cart_id'];
 }
-
+$sub_cat_id =  NULL;
 if (isset($_GET['sub_cat_id'])) {
   $sub_cat_id = $_GET['sub_cat_id'];
 }
@@ -62,6 +62,10 @@ if (isset($_GET['sub_cat_id'])) {
       $inventory = "";
   if (isset($_GET['stock'])) {
     $inventory = $_GET['stock'];
+  }
+  $hash_id = NULL;
+  if (isset($_GET['hash_id'])) {
+    $hash_id = $_GET['hash_id'];
   }
 
 
@@ -231,6 +235,10 @@ switch ($uri[1]) {
   include APP_PATH."/views/users/users_products.php";
   break;
 
+   case "product?sub_cat_id=$sub_cat_id&&page=$i":
+  include APP_PATH."/views/users/users_products.php";
+  break;
+
    case "product?cat_id=$cat_id":
   include APP_PATH."/views/users/users_products.php";
   break;
@@ -314,7 +322,7 @@ switch ($uri[1]) {
 
 
   
-  case "confirmation":
+  case "confirmation?hash_id=$hash_id":
   include APP_PATH."/views/users/confirmation.php";
   break;
 

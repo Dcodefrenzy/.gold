@@ -1,6 +1,6 @@
 <?php  
 ob_start();
-$page_title = "Checkout";
+$page_title = "Comfirmation";
 include "includes/header2.php";
 
 	if(!isset($_SESSION['id'])){
@@ -9,6 +9,18 @@ include "includes/header2.php";
  	else{
  	$user_id = $_SESSION['id'];
  	}
+ 	if (isset($_GET['hash_id'])) {
+ 		$hash_id = $_GET['hash_id'];
+ 	}
+	getQuantityforinventory($conn, $user_id);
+
  	delALLCart($conn, $user_id);
 
  	?>
+
+
+
+ 
+				<?php displayCustomerCheckout($conn, $user_id, $hash_id ); ?>
+	
+				</div>

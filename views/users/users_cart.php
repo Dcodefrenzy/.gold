@@ -1,7 +1,8 @@
-
 <?php 
 ob_start();
+$page_title = "cart";
 include "includes/header2.php"; 
+
  
  if(!isset($_SESSION['id'])){
  	$user_id = $sid;
@@ -72,7 +73,6 @@ include "includes/header2.php";
 					<li style="width: 20%"><span>Product Name</span></li>		
 					<li style="width: 20%"><span>update</span></li>
 					<li style="width: 20%"><span>price</span></li>
-					<li style="width: 20%"> <span>Remove</span></li>
 					<div class="clearfix"> </div>
 				</ul>
 				<?php selectFromCart($conn, $user_id) ?>

@@ -3,17 +3,21 @@ ob_start();
 $page_title = "Checkout";
 include "includes/header2.php";
 
-	if(!isset($_SESSION['id'])){
-    header("Location:register");
-  }
- 	else{
- 	$user_id = $_SESSION['id'];
- 	}
- 	$cart_numb = getCart($conn, $user_id);
+	$cart_numb = getCart($conn, $user_id);
 	if($cart_numb < 1){
 	header("Location:cart");
 	}
 
+
+	if(!isset($_SESSION['id'])){
+    header("Location:register");
+  	}
+ 	else{
+ 	$user_id = $_SESSION['id'];
+ 	}
+ 	
+ 		
+	
  
 	
 	$error = [];
@@ -41,6 +45,7 @@ if(array_key_exists('checkout', $_POST)){
    	$clean = array_map('trim', $_POST);
 
     addCheckout($conn, $user_id, $clean);
+    
   }
   checkInventory($conn, $user_id);
 }
@@ -79,7 +84,6 @@ if(array_key_exists('checkout', $_POST)){
 						<?php $display = displayErrors($error, 'phone_number'); echo $display; ?>
 						<input placeholder="Phone Number" type="text" tabindex="4" required name="phone_number">
 						<div class="address">
-							<a class="forgot" href="#">Forgot Your Password?</a>
 							<input type="submit" value="Checkout" name="checkout">
 							</form>
 							<div class="clearfix"></div>
